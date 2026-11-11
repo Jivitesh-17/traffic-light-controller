@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project source="3.8.0" version="1.0">
+  This file is intended to be loaded by Logisim-evolution (https://github.com/logisim-evolution/).
+
+  <lib desc="#Wiring" name="0"/>
+  <lib desc="#Gates" name="1"/>
+  <lib desc="#Plexers" name="2"/>
+  <lib desc="#Arithmetic" name="3"/>
+  <lib desc="#Memory" name="4"/>
+  <lib desc="#I/O" name="10"/>
+  <lib desc="#Base" name="5"/>
+  <main name="TrafficLightController"/>
+  <circuit name="TrafficLightController">
+    <a name="circuit" val="TrafficLightController"/>
+
+    <!-- ===== Title / notes ===== -->
+    <comp lib="5" loc="(200,30)" name="Text">
+      <a name="text" val="Traffic Light Controller FSM"/>
+      <a name="font" val="SansSerif bold 16"/>
+    </comp>
+    <comp lib="5" loc="(300,540)" name="Text">
+      <a name="text" val="States S1S0: 00=HW Green/CW Red, 01=HW Yellow/CW Red, 10=HW Red/CW Green, 11=HW Red/CW Yellow"/>
+      <a name="font" val="SansSerif plain 12"/>
+    </comp>
+
+    <!-- ===== Clock ===== -->
+    <comp lib="0" loc="(60,100)" name="Clock">
+      <a name="label" val="CLK"/>
+    </comp>
+    <comp lib="0" loc="(80,100)" name="Tunnel">
+      <a name="label" val="CLK"/>
+    </comp>
+    <wire from="(60,100)" to="(80,100)"/>
+
+    <!-- ===== State register: two D flip-flops (2-bit counter 00-01-10-11) ===== -->
+    <!-- S0 flip-flop: D0 = NOT S0 -->
+    <comp lib="4" loc="(300,200)" name="D Flip-Flop">
+      <a name="appearance" val="classic"/>
+    </comp>
+    <!-- S1 flip-flop: D1 = S1 XOR S0 -->
+    <comp lib="4" loc="(300,300)" name="D Flip-Flop">
+      <a name="appearance" val="classic"/>
+    </comp>
+
+    <!-- clock into both flip-flops -->
+    <comp lib="0" loc="(250,220)" name="Tunnel">
+      <a name="label" val="CLK"/>
+    </comp>
+    <comp lib="0" loc="(250,320)" name="Tunnel">
+      <a name="label" val="CLK"/>
+    </comp>
+    <wire from="(250,220)" to="(270,220)"/>
+    <wire from="(250,320)" to="(270,320)"/>
+
+    <!-- state outputs -->
+    <comp lib="0" loc="(320,200)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="S0"/>
+    </comp>
+    <comp lib="0" loc="(320,300)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="S1"/>
+    </comp>
+    <wire from="(300,200)" to="(320,200)"/>
+    <wire from="(300,300)" to="(320,300)"/>
+
+    <!-- next-state logic: D0 = NOT S0 -->
+    <comp lib="0" loc="(180,200)" name="Tunnel">
+      <a name="label" val="S0"/>
+    </comp>
+    <comp lib="1" loc="(220,200)" name="NOT Gate">
+      <a name="size" val="20"/>
+    </comp>
+    <wire from="(180,200)" to="(200,200)"/>
+    <wire from="(220,200)" to="(270,200)"/>
+
+    <!-- next-state logic: D1 = S1 XOR S0 -->
+    <comp lib="0" loc="(170,290)" name="Tunnel">
+      <a name="label" val="S1"/>
+    </comp>
+    <comp lib="0" loc="(170,310)" name="Tunnel">
+      <a name="label" val="S0"/>
+    </comp>
+    <comp lib="1" loc="(220,300)" name="XOR Gate">
+      <a name="size" val="30"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <wire from="(170,290)" to="(190,290)"/>
+    <wire from="(170,310)" to="(190,310)"/>
+    <wire from="(220,300)" to="(270,300)"/>
+
+    <!-- ===== Inverted state signals ===== -->
+    <comp lib="0" loc="(380,100)" name="Tunnel">
+      <a name="label" val="S1"/>
+    </comp>
+    <comp lib="1" loc="(420,100)" name="NOT Gate">
+      <a name="size" val="20"/>
+    </comp>
+    <comp lib="0" loc="(440,100)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="nS1"/>
+    </comp>
+    <wire from="(380,100)" to="(400,100)"/>
+    <wire from="(420,100)" to="(440,100)"/>
+
+    <comp lib="0" loc="(380,140)" name="Tunnel">
+      <a name="label" val="S0"/>
+    </comp>
+    <comp lib="1" loc="(420,140)" name="NOT Gate">
+      <a name="size" val="20"/>
+    </comp>
+    <comp lib="0" loc="(440,140)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="nS0"/>
+    </comp>
+    <wire from="(380,140)" to="(400,140)"/>
+    <wire from="(420,140)" to="(440,140)"/>
+
+    <!-- ===== Output decoder ===== -->
+    <!-- HW_Red = S1 -->
+    <comp lib="0" loc="(560,180)" name="Tunnel">
+      <a name="label" val="S1"/>
+    </comp>
+    <comp lib="0" loc="(660,180)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="HW_Red"/>
+    </comp>
+    <wire from="(560,180)" to="(660,180)"/>
+
+    <!-- HW_Yellow = NOT S1 AND S0 -->
+    <comp lib="0" loc="(530,230)" name="Tunnel">
+      <a name="label" val="nS1"/>
+    </comp>
+    <comp lib="0" loc="(530,250)" name="Tunnel">
+      <a name="label" val="S0"/>
+    </comp>
+    <comp lib="1" loc="(600,240)" name="AND Gate">
+      <a name="size" val="30"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(660,240)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="HW_Yellow"/>
+    </comp>
+    <wire from="(530,230)" to="(570,230)"/>
+    <wire from="(530,250)" to="(570,250)"/>
+    <wire from="(600,240)" to="(660,240)"/>
+
+    <!-- HW_Green = NOR(S1, S0) -->
+    <comp lib="0" loc="(530,290)" name="Tunnel">
+      <a name="label" val="S1"/>
+    </comp>
+    <comp lib="0" loc="(530,310)" name="Tunnel">
+      <a name="label" val="S0"/>
+    </comp>
+    <comp lib="1" loc="(600,300)" name="NOR Gate">
+      <a name="size" val="30"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(660,300)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="HW_Green"/>
+    </comp>
+    <wire from="(530,290)" to="(570,290)"/>
+    <wire from="(530,310)" to="(570,310)"/>
+    <wire from="(600,300)" to="(660,300)"/>
+
+    <!-- CW_Red = NOT S1 -->
+    <comp lib="0" loc="(560,360)" name="Tunnel">
+      <a name="label" val="nS1"/>
+    </comp>
+    <comp lib="0" loc="(660,360)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="CW_Red"/>
+    </comp>
+    <wire from="(560,360)" to="(660,360)"/>
+
+    <!-- CW_Yellow = S1 AND S0 -->
+    <comp lib="0" loc="(530,410)" name="Tunnel">
+      <a name="label" val="S1"/>
+    </comp>
+    <comp lib="0" loc="(530,430)" name="Tunnel">
+      <a name="label" val="S0"/>
+    </comp>
+    <comp lib="1" loc="(600,420)" name="AND Gate">
+      <a name="size" val="30"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(660,420)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="CW_Yellow"/>
+    </comp>
+    <wire from="(530,410)" to="(570,410)"/>
+    <wire from="(530,430)" to="(570,430)"/>
+    <wire from="(600,420)" to="(660,420)"/>
+
+    <!-- CW_Green = S1 AND NOT S0 -->
+    <comp lib="0" loc="(530,470)" name="Tunnel">
+      <a name="label" val="S1"/>
+    </comp>
+    <comp lib="0" loc="(530,490)" name="Tunnel">
+      <a name="label" val="nS0"/>
+    </comp>
+    <comp lib="1" loc="(600,480)" name="AND Gate">
+      <a name="size" val="30"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(660,480)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="CW_Green"/>
+    </comp>
+    <wire from="(530,470)" to="(570,470)"/>
+    <wire from="(530,490)" to="(570,490)"/>
+    <wire from="(600,480)" to="(660,480)"/>
+  </circuit>
+</project>
